@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>소닉 러너</title>
+    <link rel="stylesheet" href="style.css?v=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 메인으로</a>
+    
+    <div class="container">
+        <div class="game-header">
+            <div class="score-display">
+                <span class="ring-icon">💍</span>
+                <span id="rings">0</span>
+            </div>
+            <div class="distance-display">
+                <span id="distance">0</span>m
+            </div>
+            <div class="score-display">
+                <span>🏆</span>
+                <span id="score">0</span>
+            </div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <canvas id="gameCanvas"></canvas>
+            
+            <!-- 시작 화면 -->
+            <div id="startOverlay" class="overlay">
+                <div class="overlay-content">
+                    <h1 class="game-title">🦔 소닉 러너</h1>
+                    <p class="instruction">터치로 점프하고 장애물을 피하세요!</p>
+                    <div class="controls-guide">
+                        <div class="control-item">👆 탭 → 점프</div>
+                        <div class="control-item">👆 길게 → 높이 점프</div>
+                        <div class="control-item">👇 스와이프 → 슬라이드</div>
+                    </div>
+                    <button id="startBtn" class="btn primary">게임 시작</button>
+                </div>
+            </div>
+            
+            <!-- 게임 오버 화면 -->
+            <div id="gameOverOverlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h2>💥 게임 오버</h2>
+                    <div class="final-stats">
+                        <p>거리: <span id="finalDistance">0</span>m</p>
+                        <p>링: <span id="finalRings">0</span>개</p>
+                        <p class="final-score">최종 점수: <span id="finalScore">0</span></p>
+                    </div>
+                    <button id="restartBtn" class="btn primary">다시 하기</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 모바일 조작 힌트 -->
+        <div class="touch-hint">
+            <span>👆 터치하여 점프 | 👇 아래로 스와이프하여 슬라이드</span>
+        </div>
+    </div>
+    
+    <script src="game.js?v=1"></script>
+</body>
+</html>
+
