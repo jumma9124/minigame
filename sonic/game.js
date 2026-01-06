@@ -140,9 +140,14 @@ function createParticles(x, y, color, count = 10) {
 // 점프
 function jump(highJump = false) {
     if (!player.isJumping && !player.isSliding) {
+        // 땅에서 점프
         player.vy = highJump ? HIGH_JUMP_FORCE : JUMP_FORCE;
         player.isJumping = true;
         createParticles(player.x, player.y + player.height, '#7CB342', 5);
+    } else if (player.isJumping && highJump) {
+        // 공중에서 더블 탭 → 부스트 (더 높이!)
+        player.vy = HIGH_JUMP_FORCE;
+        createParticles(player.x, player.y + player.height, '#FFD700', 8);
     }
 }
 
