@@ -73,7 +73,7 @@ window.addEventListener('resize', resizeCanvas);
 
 // 장애물 생성
 function createObstacle() {
-    const types = ['spike', 'box', 'bird'];
+    const types = ['spike', 'box', 'box', 'spike']; // 새 제거, 땅 장애물만
     const type = types[Math.floor(Math.random() * types.length)];
     
     let obstacle = {
@@ -170,16 +170,10 @@ canvas.addEventListener('touchend', (e) => {
     if (!gameState.isRunning || !isTouching) return;
     e.preventDefault();
     
-    const touchEndY = e.changedTouches[0].clientY;
     const touchDuration = Date.now() - touchStartTime;
-    const swipeDistance = touchEndY - touchStartY;
     
-    // 아래로 스와이프 → 슬라이드
-    if (swipeDistance > 50) {
-        slide();
-    }
-    // 길게 누르기 → 높이 점프
-    else if (touchDuration > 200) {
+    // 길게 누르기 (300ms 이상) → 높이 점프
+    if (touchDuration > 300) {
         jump(true);
     }
     // 짧게 탭 → 일반 점프
@@ -665,29 +659,21 @@ function startGame() {
 }
 
 // 이벤트 리스너 - 클릭과 터치 모두 지원
-startBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startGame();
-});
+let gameStarted = false;
 
-startBtn.addEventListener('touchend', (e) => {
+function handleStartGame(e) {
+    if (gameStarted) return;
+    gameStarted = true;
     e.preventDefault();
-    e.stopPropagation();
     startGame();
-});
+    setTimeout(() => { gameStarted = false; }, 300);
+}
 
-restartBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startGame();
-});
+startBtn.addEventListener('click', handleStartGame);
+startBtn.addEventListener('touchstart', handleStartGame, { passive: false });
 
-restartBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    startGame();
-});
+restartBtn.addEventListener('click', handleStartGame);
+restartBtn.addEventListener('touchstart', handleStartGame, { passive: false });
 
 // PC에서 마우스 클릭으로 점프 (테스트용)
 gameArea.addEventListener('click', (e) => {

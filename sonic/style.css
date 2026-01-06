@@ -152,6 +152,10 @@ body {
     border-radius: 30px;
     cursor: pointer;
     transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 200;
 }
 
 .btn.primary {
