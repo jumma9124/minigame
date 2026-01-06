@@ -155,10 +155,10 @@ function slide() {
     }
 }
 
-// 터치 이벤트
-gameArea.addEventListener('touchstart', (e) => {
-    e.preventDefault();
+// 터치 이벤트 - 캔버스에서만 처리
+canvas.addEventListener('touchstart', (e) => {
     if (!gameState.isRunning) return;
+    e.preventDefault();
     
     const touch = e.touches[0];
     touchStartY = touch.clientY;
@@ -166,9 +166,9 @@ gameArea.addEventListener('touchstart', (e) => {
     isTouching = true;
 }, { passive: false });
 
-gameArea.addEventListener('touchend', (e) => {
-    e.preventDefault();
+canvas.addEventListener('touchend', (e) => {
     if (!gameState.isRunning || !isTouching) return;
+    e.preventDefault();
     
     const touchEndY = e.changedTouches[0].clientY;
     const touchDuration = Date.now() - touchStartTime;
@@ -190,7 +190,8 @@ gameArea.addEventListener('touchend', (e) => {
     isTouching = false;
 }, { passive: false });
 
-gameArea.addEventListener('touchmove', (e) => {
+canvas.addEventListener('touchmove', (e) => {
+    if (!gameState.isRunning) return;
     e.preventDefault();
 }, { passive: false });
 
@@ -663,15 +664,37 @@ function startGame() {
     gameLoop();
 }
 
-// 이벤트 리스너
-startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', startGame);
+// 이벤트 리스너 - 클릭과 터치 모두 지원
+startBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startGame();
+});
 
-// 터치로도 시작 가능
-startOverlay.addEventListener('click', (e) => {
-    if (e.target === startOverlay || e.target.closest('.overlay-content')) {
-        if (!e.target.closest('button')) return;
-    }
+startBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startGame();
+});
+
+restartBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startGame();
+});
+
+restartBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startGame();
+});
+
+// PC에서 마우스 클릭으로 점프 (테스트용)
+gameArea.addEventListener('click', (e) => {
+    if (!gameState.isRunning) return;
+    // 버튼 클릭이 아닌 경우에만 점프
+    if (e.target.tagName === 'BUTTON') return;
+    jump(false);
 });
 
 // 초기화
