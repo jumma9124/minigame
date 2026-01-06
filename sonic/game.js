@@ -60,6 +60,7 @@ let particles = [];
 let touchStartY = 0;
 let touchStartTime = 0;
 let isTouching = false;
+let lastTapTime = 0; // 더블 탭 감지용
 
 // 캔버스 크기 설정
 function resizeCanvas() {
@@ -170,15 +171,18 @@ canvas.addEventListener('touchend', (e) => {
     if (!gameState.isRunning || !isTouching) return;
     e.preventDefault();
     
-    const touchDuration = Date.now() - touchStartTime;
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
     
-    // 길게 누르기 (300ms 이상) → 높이 점프
-    if (touchDuration > 300) {
+    // 더블 탭 (300ms 이내에 두 번 탭) → 높이 점프
+    if (timeSinceLastTap < 300) {
         jump(true);
+        lastTapTime = 0; // 리셋
     }
-    // 짧게 탭 → 일반 점프
+    // 단일 탭 → 일반 점프
     else {
         jump(false);
+        lastTapTime = now;
     }
     
     isTouching = false;
@@ -676,11 +680,23 @@ restartBtn.addEventListener('click', handleStartGame);
 restartBtn.addEventListener('touchstart', handleStartGame, { passive: false });
 
 // PC에서 마우스 클릭으로 점프 (테스트용)
+let lastClickTime = 0;
 gameArea.addEventListener('click', (e) => {
     if (!gameState.isRunning) return;
     // 버튼 클릭이 아닌 경우에만 점프
     if (e.target.tagName === 'BUTTON') return;
-    jump(false);
+    
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTime;
+    
+    // 더블 클릭 → 높이 점프
+    if (timeSinceLastClick < 300) {
+        jump(true);
+        lastClickTime = 0;
+    } else {
+        jump(false);
+        lastClickTime = now;
+    }
 });
 
 // 초기화
