@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미니 게임 아케이드</title>
+    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <h1 class="title">미니 게임 아케이드</h1>
+        <p class="subtitle">클래식 게임을 즐겨보세요</p>
+    </header>
+
+    <main class="slider-container">
+        <button class="slider-btn prev-btn" onclick="slide(-1)">‹</button>
+        
+        <div class="slider-wrapper">
+            <div class="slider-track">
+                <a href="jumong/index.html" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">주몽 활쏘기</h2>
+                        <div class="game-tags">
+                            <span class="tag">액션</span>
+                            <span class="tag">슈팅</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <a href="ddang/index.html" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">땅따먹기</h2>
+                        <div class="game-tags">
+                            <span class="tag">퍼즐</span>
+                            <span class="tag">전략</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <a href="lottery/index.html" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">랜덤 뽑기</h2>
+                        <div class="game-tags">
+                            <span class="tag">랜덤</span>
+                            <span class="tag">추첨</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <a href="tetris/index.html" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">테트리스</h2>
+                        <div class="game-tags">
+                            <span class="tag">퍼즐</span>
+                            <span class="tag">클래식</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <!-- 게임 추가 예시 (필요시 주석 해제) -->
+                <!--
+                <a href="#" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">새 게임 1</h2>
+                        <div class="game-tags">
+                            <span class="tag">장르</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <a href="#" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">새 게임 2</h2>
+                        <div class="game-tags">
+                            <span class="tag">장르</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+
+                <a href="#" class="game-card">
+                    <div class="card-content">
+                        <h2 class="game-title">새 게임 3</h2>
+                        <div class="game-tags">
+                            <span class="tag">장르</span>
+                        </div>
+                        <div class="play-button">플레이</div>
+                    </div>
+                </a>
+                -->
+            </div>
+        </div>
+        
+        <button class="slider-btn next-btn" onclick="slide(1)">›</button>
+    </main>
+
+    <div class="slider-dots"></div>
+
+    <footer class="footer">
+        <p>© 2026 미니 게임 아케이드</p>
+    </footer>
+
+    <script>
+        const track = document.querySelector('.slider-track');
+        const originalCards = Array.from(document.querySelectorAll('.game-card'));
+        const dotsContainer = document.querySelector('.slider-dots');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        
+        const cardsPerView = window.innerWidth <= 768 ? 1 : (window.innerWidth <= 1024 ? 2 : 3);
+        const totalCards = originalCards.length;
+        const needsSlider = totalCards > cardsPerView;
+        
+        let currentIndex = 0;
+        let isTransitioning = false;
+        let cardWidth = 0;
+        const cloneCount = cardsPerView; // 앞뒤로 복제할 카드 수
+        
+        // 무한 슬라이더를 위한 클론 생성
+        function setupInfiniteSlider() {
+            if (!needsSlider) {
+                track.style.justifyContent = 'center';
+                prevBtn.style.visibility = 'hidden';
+                nextBtn.style.visibility = 'hidden';
+                dotsContainer.style.display = 'none';
+                return;
+            }
+            
+            // 끝에 처음 카드들 복제
+            for (let i = 0; i < cloneCount; i++) {
+                const clone = originalCards[i % totalCards].cloneNode(true);
+                clone.classList.add('clone');
+                track.appendChild(clone);
+            }
+            
+            // 처음에 마지막 카드들 복제 (올바른 순서로)
+            for (let i = cloneCount - 1; i >= 0; i--) {
+                const srcIndex = (totalCards - cloneCount + i) % totalCards;
+                const clone = originalCards[srcIndex].cloneNode(true);
+                clone.classList.add('clone');
+                track.insertBefore(clone, track.firstChild);
+            }
+            
+            // 카드 너비 계산 및 초기 위치 설정
+            updateCardWidth();
+            setPositionWithoutTransition(0);
+        }
+        
+        function updateCardWidth() {
+            const firstCard = track.querySelector('.game-card');
+            if (firstCard) {
+                cardWidth = firstCard.offsetWidth + 24; // gap 포함
+            }
+        }
+        
+        function setPositionWithoutTransition(index) {
+            track.style.transition = 'none';
+            const offset = (index + cloneCount) * cardWidth;
+            track.style.transform = `translateX(-${offset}px)`;
+        }
+        
+        // 도트 생성
+        function createDots() {
+            if (!needsSlider) return;
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalCards; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+        
+        // 슬라이드 이동
+        function slide(direction) {
+            if (!needsSlider || isTransitioning) return;
+            isTransitioning = true;
+            
+            currentIndex += direction;
+            
+            track.style.transition = 'transform 0.4s ease-in-out';
+            const offset = (currentIndex + cloneCount) * cardWidth;
+            track.style.transform = `translateX(-${offset}px)`;
+        }
+        
+        // 특정 슬라이드로 이동
+        function goToSlide(index) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            currentIndex = index;
+            
+            track.style.transition = 'transform 0.4s ease-in-out';
+            const offset = (currentIndex + cloneCount) * cardWidth;
+            track.style.transform = `translateX(-${offset}px)`;
+        }
+        
+        // 트랜지션 종료 시 무한 루프 처리
+        track.addEventListener('transitionend', () => {
+            isTransitioning = false;
+            
+            // 끝에 도달하면 처음으로 점프
+            if (currentIndex >= totalCards) {
+                currentIndex = 0;
+                setPositionWithoutTransition(0);
+            }
+            // 처음 이전으로 가면 끝으로 점프
+            else if (currentIndex < 0) {
+                currentIndex = totalCards - 1;
+                setPositionWithoutTransition(totalCards - 1);
+            }
+            
+            updateDots();
+        });
+        
+        // 도트 업데이트
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            const realIndex = ((currentIndex % totalCards) + totalCards) % totalCards;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === realIndex);
+            });
+        }
+        
+        // 초기화
+        if (totalCards > 0) {
+            setupInfiniteSlider();
+            createDots();
+            updateDots();
+        }
+        
+        // 리사이즈 대응
+        window.addEventListener('resize', () => {
+            location.reload();
+        });
+    </script>
+</body>
+</html>

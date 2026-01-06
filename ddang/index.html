@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>땅따먹기 게임</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        /* 뒤로가기 버튼 */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 2000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        #gameCanvas {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #f0f0f0;
+        }
+        #info {
+            margin-top: 20px;
+            color: #000000;
+            font-size: 18px;
+            text-align: center;
+        }
+        #controls {
+            margin-top: 10px;
+            color: #000000;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        /* 시작 화면 스타일 */
+        #startScreen {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        #startScreen h1 {
+            margin: 0 0 30px 0;
+            color: #333;
+            font-size: 32px;
+        }
+        .start-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .start-content label {
+            font-size: 18px;
+            color: #555;
+        }
+        #levelInput {
+            width: 100px;
+            padding: 10px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            outline: none;
+        }
+        #levelInput:focus {
+            border-color: #764ba2;
+        }
+        .hint {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #888;
+        }
+        #startBtn {
+            margin-top: 10px;
+            padding: 15px 40px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #startBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 메인으로</a>
+    
+    <!-- 시작 화면 -->
+    <div id="startScreen">
+        <h1>땅따먹기 게임</h1>
+        <div class="start-content">
+            <label for="levelInput">시작 레벨:</label>
+            <input type="number" id="levelInput" value="1" min="1" max="100">
+            <p class="hint">레벨 + 10 = 올챙이 수 (예: 50레벨 → 60마리)</p>
+            <button id="startBtn">게임 시작</button>
+        </div>
+    </div>
+    
+    <!-- 게임 화면 -->
+    <div id="gameScreen" style="display: none;">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="info">
+            <div>레벨: <span id="level">1</span></div>
+            <div>영역 차지: <span id="coverage">0</span>%</div>
+            <div id="gameStatus"></div>
+        </div>
+        <div id="controls">
+            방향키 또는 WASD로 이동
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
+

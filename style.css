@@ -1,0 +1,237 @@
+/* CSS Variables */
+:root {
+    --bg-dark: #000000;
+    --bg-card: #111111;
+    --accent: #ffffff;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base */
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 80px 20px 60px;
+}
+
+.title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    margin-top: 12px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Slider Container */
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.slider-wrapper {
+    overflow: hidden;
+    flex: 1;
+    max-width: 900px;
+}
+
+.slider-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.4s ease;
+}
+
+/* Slider Buttons */
+.slider-btn {
+    background: transparent;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Slider Dots */
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 30px 0;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333333;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dot.active {
+    background: #ffffff;
+}
+
+/* Game Card */
+.game-card {
+    flex: 0 0 280px;
+    height: 320px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    border: 1px solid #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    background: #1a1a1a;
+}
+
+.card-content {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+.game-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.game-tags {
+    display: flex;
+    gap: 8px;
+}
+
+.tag {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    border: 1px solid #333333;
+}
+
+.play-button {
+    margin-top: 8px;
+    background: var(--text-primary);
+    color: var(--bg-dark);
+    padding: 12px 36px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: opacity 0.2s ease;
+}
+
+.game-card:hover .play-button {
+    opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    border-top: 1px solid #222222;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .game-card {
+        flex: 0 0 260px;
+        height: 300px;
+    }
+    
+    .slider-wrapper {
+        max-width: 560px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 60px 20px 40px;
+    }
+    
+    .slider-container {
+        gap: 10px;
+    }
+    
+    .slider-wrapper {
+        max-width: 280px;
+    }
+    
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .game-card {
+        flex: 0 0 280px;
+        height: 280px;
+    }
+    
+    .card-content {
+        padding: 24px 20px;
+    }
+    
+    .game-title {
+        font-size: 1.3rem;
+    }
+}

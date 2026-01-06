@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 뽑기</title>
+    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 메인으로</a>
+    
+    <div class="container">
+        <h1 class="title">랜덤 뽑기</h1>
+        
+        <!-- 설정 화면 -->
+        <div id="setup-screen" class="screen">
+            <div class="setup-form">
+                <!-- 게임 모드 선택 -->
+                <div class="input-group">
+                    <label>게임 모드</label>
+                    <div class="mode-selector">
+                        <label class="mode-option">
+                            <input type="radio" name="game-mode" value="normal" checked>
+                            <span class="mode-label">일반 뽑기</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="game-mode" value="prize">
+                            <span class="mode-label">경품 추첨</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- 일반 뽑기 설정 -->
+                <div id="normal-mode-settings">
+                    <!-- 공 표시 방식 -->
+                    <div class="input-group">
+                        <label>공 표시 방식</label>
+                        <div class="mode-selector">
+                            <label class="mode-option">
+                                <input type="radio" name="ball-mode" value="number" checked>
+                                <span class="mode-label">숫자</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="ball-mode" value="text">
+                                <span class="mode-label">텍스트</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 숫자 모드 설정 -->
+                    <div id="number-mode-settings">
+                        <div class="input-group">
+                            <label for="ball-count">공 개수</label>
+                            <input type="number" id="ball-count" min="2" max="100" value="20" placeholder="2~100">
+                        </div>
+                    </div>
+                    
+                    <!-- 텍스트 모드 설정 -->
+                    <div id="text-mode-settings" class="hidden">
+                        <div class="input-group">
+                            <label for="text-input">텍스트 입력 <span class="hint">(줄바꿈으로 구분)</span></label>
+                            <textarea id="text-input" placeholder="철수&#10;영희&#10;민수&#10;지영&#10;..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="pick-count">뽑을 개수</label>
+                        <input type="number" id="pick-count" min="1" max="50" value="3" placeholder="1~50">
+                    </div>
+                </div>
+                
+                <!-- 경품 추첨 설정 -->
+                <div id="prize-mode-settings" class="hidden">
+                    <div class="input-group">
+                        <label for="prize-input">경품 목록 <span class="hint">(줄바꿈으로 구분)</span></label>
+                        <textarea id="prize-input" placeholder="배민 상품권&#10;스타벅스 커피&#10;반반차&#10;1시간 조퇴&#10;30분 이용권"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>참여자 입력 방식</label>
+                        <div class="mode-selector">
+                            <label class="mode-option">
+                                <input type="radio" name="participant-mode" value="number" checked>
+                                <span class="mode-label">숫자</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="participant-mode" value="text">
+                                <span class="mode-label">이름</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="participant-number-settings">
+                        <div class="input-group">
+                            <label for="participant-count">참여자 수</label>
+                            <input type="number" id="participant-count" min="2" max="100" value="20" placeholder="2~100">
+                        </div>
+                    </div>
+                    
+                    <div id="participant-text-settings" class="hidden">
+                        <div class="input-group">
+                            <label for="participant-input">참여자 목록 <span class="hint">(줄바꿈으로 구분)</span></label>
+                            <textarea id="participant-input" placeholder="김철수&#10;이영희&#10;박민수&#10;..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="start-btn" class="btn primary">시작</button>
+            </div>
+        </div>
+        
+        <!-- 게임 화면 -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-info">
+                <span id="remaining-picks">남은 뽑기: 3</span>
+            </div>
+            
+            <div id="ball-box" class="ball-box">
+                <!-- 공들이 여기에 생성됨 -->
+            </div>
+            
+            <div class="controls">
+                <button id="pick-btn" class="btn primary">뽑기</button>
+                <button id="reset-btn" class="btn secondary">다시하기</button>
+            </div>
+            
+            <div class="result-section">
+                <h2 id="result-title">뽑힌 공</h2>
+                <div id="result-area" class="result-area">
+                    <!-- 뽑힌 공들이 여기에 표시됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 경품 발표 팝업 -->
+    <div id="prize-popup" class="popup-overlay hidden">
+        <div class="popup-content">
+            <div class="popup-icon">🎁</div>
+            <div class="popup-title">이번 당첨은</div>
+            <div id="prize-name" class="popup-prize"></div>
+            <div class="popup-subtitle">입니다!</div>
+            <button id="popup-confirm-btn" class="btn primary">당첨자 뽑기</button>
+        </div>
+    </div>
+    
+    <script src="game.js?v=6"></script>
+</body>
+</html>

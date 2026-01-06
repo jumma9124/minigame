@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주몽 활쏘기</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 메인으로</a>
+    
+    <div class="game-container">
+        <div class="header">
+            <h1>주몽 활쏘기</h1>
+            <div class="score-board">
+                <div class="score">금액: <span id="score">0</span></div>
+                <div class="level">레벨: <span id="level">1</span></div>
+            </div>
+        </div>
+        
+        <div class="start-overlay" id="startOverlay">
+            <div class="start-card">
+                <h2>게임을 시작하세요</h2>
+                <p>마우스를 움직여 조준하고, 누른 채 힘을 모은 뒤 떼서 발사!</p>
+                <button id="startBtn">스타트</button>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <canvas id="gameCanvas"></canvas>
+            <div class="crosshair" id="crosshair"></div>
+        </div>
+        
+        <div class="controls">
+            <div class="power-meter">
+                <div class="power-label">힘</div>
+                <div class="power-bar-container">
+                    <div class="power-bar" id="powerBar"></div>
+                </div>
+            </div>
+            <div class="instructions">
+                <p>마우스를 움직여 조준하고, 클릭하여 화살을 발사하세요!</p>
+                <p>타겟을 맞춰서 금액을 획득하세요!</p>
+            </div>
+        </div>
+        
+        <div class="shop-overlay" id="shopOverlay">
+            <div class="shop-card">
+                <h2>아이템 상점</h2>
+                <p class="shop-score">보유 금액: <span id="shopScore">0</span></p>
+                <div class="shop-items" id="shopItems">
+                    <!-- 아이템들이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <button id="nextLevelBtn">다음 레벨로 진행</button>
+            </div>
+        </div>
+        
+        <div class="game-over" id="gameOver">
+            <h2>게임 종료!</h2>
+                <p>최종 금액: <span id="finalScore">0</span></p>
+            <button id="restartBtn">다시 시작</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
+
