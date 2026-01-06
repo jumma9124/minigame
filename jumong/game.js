@@ -441,6 +441,12 @@ function resetTarget(target) {
     } else {
         baseSpeed = 1.5 + (gameState.level - 1) * 0.3; // 4단계 이상은 점진적으로 증가
     }
+    
+    // 모바일에서는 악당 속도 1.8배 증가
+    if (isMobileDevice()) {
+        baseSpeed *= 1.8;
+    }
+    
     target.vx = -(baseSpeed + Math.random() * 0.8);
     
     // 악당 화살 발사 관련 초기화
@@ -1142,7 +1148,13 @@ function updateTargets() {
     const now = Date.now();
     
     // 악당을 무한대로 계속 생성 (일정 간격으로)
-    const spawnInterval = 2000 + Math.random() * 1000; // 2-3초마다 생성
+    // 모바일에서는 더 빠르게 생성 (1-1.5초), PC에서는 기존대로 (2-3초)
+    let spawnInterval;
+    if (isMobileDevice()) {
+        spawnInterval = 1000 + Math.random() * 500; // 모바일: 1-1.5초마다 생성
+    } else {
+        spawnInterval = 2000 + Math.random() * 1000; // PC: 2-3초마다 생성
+    }
     if (now - gameState.lastEnemySpawnTime > spawnInterval) {
         createNewEnemy();
         gameState.lastEnemySpawnTime = now;
