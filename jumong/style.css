@@ -80,6 +80,25 @@ body {
     line-height: 1.5;
 }
 
+/* 모바일/PC 설명 분기 */
+.mobile-instructions {
+    display: none;
+}
+
+.pc-instructions {
+    display: block;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    /* 터치 디바이스 (모바일) */
+    .mobile-instructions {
+        display: block;
+    }
+    .pc-instructions {
+        display: none;
+    }
+}
+
 .header {
     text-align: center;
     margin-bottom: 20px;
@@ -125,6 +144,9 @@ body {
     overflow: hidden;
     border: 3px solid #333;
     margin-bottom: 20px;
+    touch-action: none; /* 터치 스크롤 방지 */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 #gameCanvas {

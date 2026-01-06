@@ -16,6 +16,20 @@ const shopOverlay = document.getElementById('shopOverlay');
 const shopScoreElement = document.getElementById('shopScore');
 const shopItemsDiv = document.getElementById('shopItems');
 
+// 모바일 기기 감지
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || 
+           (navigator.userAgent.indexOf('IEMobile') !== -1) ||
+           ('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0);
+}
+
+// 터치 관련 변수 (모바일용)
+let touchStartTime = 0;
+let touchTargetX = 0;
+let touchTargetY = 0;
+const MAX_CHARGE_TIME = 1500; // 최대 충전 시간 (1.5초)
+
 // 이미지 로드
 const playerImage = new Image();
 playerImage.src = '1.png';
@@ -143,36 +157,33 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
-// 플레이어 이동 업데이트
+// 플레이어 이동 업데이트 (모바일에서는 이동 비활성화, 위치 고정)
 function updatePlayer() {
     if (gameState.gameOver) return;
     
-    // 메인 플레이어만 조작 가능
+    // 메인 플레이어 위치는 고정 (이동 없음)
     if (gameState.players.length > 0) {
         const mainPlayer = gameState.players[0];
         
-        if (keys.ArrowUp || keys.w) {
-            mainPlayer.y -= playerSpeed;
+        // 모바일 모드가 아닐 때만 키보드 이동 허용
+        if (!isMobileDevice()) {
+            if (keys.ArrowUp || keys.w) {
+                mainPlayer.y -= playerSpeed;
+            }
+            if (keys.ArrowDown || keys.s) {
+                mainPlayer.y += playerSpeed;
+            }
+            if (keys.ArrowLeft || keys.a) {
+                mainPlayer.x -= playerSpeed;
+            }
+            if (keys.ArrowRight || keys.d) {
+                mainPlayer.x += playerSpeed;
+            }
+            
+            // 경계 체크
+            mainPlayer.x = Math.max(40, Math.min(mainPlayer.x, canvas.width - 40));
+            mainPlayer.y = Math.max(50, Math.min(mainPlayer.y, canvas.height - 50));
         }
-        if (keys.ArrowDown || keys.s) {
-            mainPlayer.y += playerSpeed;
-        }
-        if (keys.ArrowLeft || keys.a) {
-            mainPlayer.x -= playerSpeed;
-        }
-        if (keys.ArrowRight || keys.d) {
-            mainPlayer.x += playerSpeed;
-        }
-        
-        // 메인 플레이어가 오른쪽 끝을 통과하면 레벨 클리어
-        if (mainPlayer.x > canvas.width + 50) {
-            showLevelComplete();
-            return;
-        }
-        
-        // 경계 체크
-        mainPlayer.x = Math.max(40, Math.min(mainPlayer.x, canvas.width - 40));
-        mainPlayer.y = Math.max(50, Math.min(mainPlayer.y, canvas.height - 50));
         
         // bowX, bowY 업데이트 (화살 발사 위치)
         bowX = mainPlayer.x;
@@ -278,14 +289,25 @@ function getTargetEnemyCount(level) {
 
 // 플레이어 생성
 function createPlayers() {
-    // 메인 플레이어만 생성 (화면 하단 고정)
+    // 메인 플레이어만 생성
     gameState.players = [];
     const canvasWidth = canvas.width || 800;
     const canvasHeight = canvas.height || 500;
     
+    let playerX, playerY;
+    
+    // 모바일: 왼쪽 고정 위치 / PC: 기존 위치 (가운데 하단)
+    if (isMobileDevice()) {
+        playerX = canvasWidth * 0.12; // 왼쪽에서 12% 위치에 고정
+        playerY = canvasHeight * 0.7; // 화면 하단 70% 위치
+    } else {
+        playerX = canvasWidth / 2; // 가운데
+        playerY = canvasHeight - 100; // 하단
+    }
+    
     const mainPlayer = {
-        x: canvasWidth / 2,
-        y: canvasHeight - 100,
+        x: playerX,
+        y: playerY,
         isMain: true,
         hp: 3, // 체력 (3발 맞으면 죽음)
         isDead: false
@@ -817,16 +839,119 @@ gameArea.addEventListener('mouseup', (e) => {
     updateUI();
 });
 
+// ===== 모바일 터치 이벤트 =====
+
+// 터치 시작
+gameArea.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (gameState.gameOver) return;
+    
+    const touch = e.touches[0];
+    const rect = gameArea.getBoundingClientRect();
+    touchTargetX = touch.clientX - rect.left;
+    touchTargetY = touch.clientY - rect.top;
+    
+    // 십자선 표시
+    crosshair.style.display = 'block';
+    crosshair.style.left = touchTargetX + 'px';
+    crosshair.style.top = touchTargetY + 'px';
+    
+    // 즉시 발사 아이템이 있으면 바로 발사
+    if (gameState.items.instantShot) {
+        shootArrow(touchTargetX, touchTargetY);
+        return;
+    }
+    
+    // 빠른 발사 아이템이 있으면 바로 발사
+    if (gameState.items.rapidFire) {
+        const now = Date.now();
+        if (now - gameState.lastShotTime >= 150) {
+            gameState.lastShotTime = now;
+            shootArrow(touchTargetX, touchTargetY);
+            updateUI();
+        }
+        return;
+    }
+    
+    // 충전 시작
+    touchStartTime = Date.now();
+    gameState.isCharging = true;
+    gameState.power = 0;
+}, { passive: false });
+
+// 터치 이동 (조준 업데이트)
+gameArea.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (gameState.gameOver) return;
+    
+    const touch = e.touches[0];
+    const rect = gameArea.getBoundingClientRect();
+    touchTargetX = touch.clientX - rect.left;
+    touchTargetY = touch.clientY - rect.top;
+    
+    // 십자선 이동
+    crosshair.style.display = 'block';
+    crosshair.style.left = touchTargetX + 'px';
+    crosshair.style.top = touchTargetY + 'px';
+    
+    // 마우스 좌표도 업데이트
+    gameState.mouseX = touchTargetX;
+    gameState.mouseY = touchTargetY;
+}, { passive: false });
+
+// 터치 종료 (발사)
+gameArea.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (gameState.gameOver) return;
+    
+    // 십자선 숨기기
+    crosshair.style.display = 'none';
+    
+    // 즉시 발사 또는 빠른 발사 아이템이 있으면 이미 발사했으므로 리턴
+    if (gameState.items.instantShot || gameState.items.rapidFire) {
+        gameState.isCharging = false;
+        return;
+    }
+    
+    if (!gameState.isCharging) return;
+    
+    // 충전 시간에 따른 파워 계산 (0~1)
+    const chargeTime = Date.now() - touchStartTime;
+    const power = Math.min(chargeTime / MAX_CHARGE_TIME, 1);
+    gameState.power = power;
+    
+    // 화살 발사
+    shootArrow(touchTargetX, touchTargetY);
+    
+    gameState.isCharging = false;
+    gameState.power = 0;
+    updateUI();
+}, { passive: false });
+
+// 터치 취소
+gameArea.addEventListener('touchcancel', (e) => {
+    gameState.isCharging = false;
+    gameState.power = 0;
+    crosshair.style.display = 'none';
+});
+
 // 힘 게이지 업데이트
 function updatePower() {
     if (gameState.isCharging && !gameState.items.powerShot) {
-        gameState.power += gameState.powerDirection * 0.02;
-        if (gameState.power >= 1) {
-            gameState.power = 1;
-            gameState.powerDirection = -1;
-        } else if (gameState.power <= 0) {
-            gameState.power = 0;
-            gameState.powerDirection = 1;
+        // 모바일에서는 터치 시간에 따라 파워 계산
+        if (isMobileDevice() && touchStartTime > 0) {
+            const chargeTime = Date.now() - touchStartTime;
+            gameState.power = Math.min(chargeTime / MAX_CHARGE_TIME, 1);
+        } else {
+            // PC에서는 기존 방식 (좌우로 움직이는 게이지)
+            gameState.power += gameState.powerDirection * 0.02;
+            if (gameState.power >= 1) {
+                gameState.power = 1;
+                gameState.powerDirection = -1;
+            } else if (gameState.power <= 0) {
+                gameState.power = 0;
+                gameState.powerDirection = 1;
+            }
         }
         powerBar.style.width = (gameState.power * 100) + '%';
     } else if (gameState.items.powerShot && gameState.isCharging) {
