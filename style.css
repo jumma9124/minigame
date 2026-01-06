@@ -222,11 +222,19 @@ body {
         padding: 0 10px;
         flex: 1;
         align-items: center;
+        justify-content: center;
     }
     
     .slider-wrapper {
         max-width: calc(100vw - 100px);
-        flex: 1;
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .slider-track {
+        gap: 12px;
+        justify-content: center;
     }
     
     .slider-btn {
@@ -237,13 +245,9 @@ body {
         flex-shrink: 0;
     }
     
-    .slider-track {
-        gap: 12px;
-    }
-    
     .game-card {
         flex: 0 0 calc(100vw - 110px);
-        max-width: none;
+        max-width: 280px;
         height: auto;
         min-height: 280px;
     }
@@ -303,12 +307,19 @@ body {
     }
     
     .slider-container {
-        gap: 8px;
-        padding: 0 8px;
+        gap: 6px;
+        padding: 0 6px;
+        justify-content: center;
     }
     
     .slider-wrapper {
-        max-width: calc(100vw - 80px);
+        max-width: calc(100vw - 76px);
+        display: flex;
+        justify-content: center;
+    }
+    
+    .slider-track {
+        justify-content: center;
     }
     
     .slider-btn {
@@ -319,7 +330,8 @@ body {
     }
     
     .game-card {
-        flex: 0 0 calc(100vw - 96px);
+        flex: 0 0 calc(100vw - 88px);
+        max-width: 260px;
         min-height: 260px;
     }
     
