@@ -16,12 +16,15 @@ const shopOverlay = document.getElementById('shopOverlay');
 const shopScoreElement = document.getElementById('shopScore');
 const shopItemsDiv = document.getElementById('shopItems');
 
-// 모바일 기기 감지
+// 모바일 기기 감지 (화면 크기 + 포인터 타입으로 더 정확하게)
 function isMobileDevice() {
-    return (typeof window.orientation !== "undefined") || 
-           (navigator.userAgent.indexOf('IEMobile') !== -1) ||
-           ('ontouchstart' in window) ||
-           (navigator.maxTouchPoints > 0);
+    // 화면 너비가 작고 터치가 주요 입력 방식인 경우에만 모바일로 판단
+    const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isSmallScreen = window.innerWidth <= 768;
+    const isTouchOnly = window.matchMedia('(hover: none)').matches;
+    
+    // 터치만 지원하고 호버가 안 되는 기기 = 진짜 모바일
+    return isTouchOnly && hasCoarsePointer;
 }
 
 // 터치 관련 변수 (모바일용)
