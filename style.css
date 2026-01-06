@@ -205,33 +205,152 @@ body {
 
 @media (max-width: 768px) {
     .header {
-        padding: 60px 20px 40px;
+        padding: 40px 16px 30px;
+    }
+    
+    .title {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+        margin-top: 8px;
     }
     
     .slider-container {
-        gap: 10px;
+        gap: 8px;
+        padding: 0 12px;
     }
     
     .slider-wrapper {
-        max-width: 280px;
+        max-width: calc(100vw - 120px);
     }
     
     .slider-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        min-width: 36px;
+    }
+    
+    .slider-track {
+        gap: 16px;
     }
     
     .game-card {
-        flex: 0 0 280px;
-        height: 280px;
+        flex: 0 0 calc(100vw - 140px);
+        max-width: 280px;
+        height: 260px;
     }
     
     .card-content {
-        padding: 24px 20px;
+        padding: 20px 16px;
+        gap: 12px;
     }
     
     .game-title {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
+    }
+    
+    .game-tags {
+        gap: 6px;
+    }
+    
+    .tag {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+    
+    .play-button {
+        padding: 10px 28px;
+        font-size: 0.85rem;
+        margin-top: 4px;
+    }
+    
+    .slider-dots {
+        padding: 20px 0;
+        gap: 8px;
+    }
+    
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .footer {
+        padding: 16px;
+        font-size: 0.75rem;
+    }
+}
+
+/* 작은 모바일 화면 */
+@media (max-width: 480px) {
+    .header {
+        padding: 30px 12px 20px;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .slider-container {
+        gap: 6px;
+        padding: 0 8px;
+    }
+    
+    .slider-wrapper {
+        max-width: calc(100vw - 100px);
+    }
+    
+    .slider-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        min-width: 32px;
+    }
+    
+    .game-card {
+        flex: 0 0 calc(100vw - 116px);
+        max-width: 240px;
+        height: 240px;
+    }
+    
+    .card-content {
+        padding: 16px 12px;
+        gap: 10px;
+    }
+    
+    .game-title {
+        font-size: 1.1rem;
+    }
+    
+    .play-button {
+        padding: 8px 24px;
+        font-size: 0.8rem;
+    }
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) {
+    .game-card:hover {
+        transform: none;
+        background: var(--bg-card);
+    }
+    
+    .game-card:active {
+        transform: scale(0.98);
+        background: #1a1a1a;
+    }
+    
+    .slider-btn:hover {
+        background: transparent;
+    }
+    
+    .slider-btn:active {
+        background: rgba(255, 255, 255, 0.2);
     }
 }
