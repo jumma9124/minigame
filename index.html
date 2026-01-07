@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>미니 게임 아케이드</title>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
@@ -124,65 +124,13 @@
         const dotsContainer = document.querySelector('.slider-dots');
         const prevBtn = document.querySelector('.prev-btn');
         const nextBtn = document.querySelector('.next-btn');
-        
-        const cardsPerView = window.innerWidth <= 768 ? 1 : (window.innerWidth <= 1024 ? 2 : 3);
         const totalCards = originalCards.length;
-        const needsSlider = totalCards > cardsPerView;
         
         let currentIndex = 0;
         let isTransitioning = false;
-        let cardWidth = 0;
-        const cloneCount = cardsPerView; // 앞뒤로 복제할 카드 수
-        
-        // 무한 슬라이더를 위한 클론 생성
-        function setupInfiniteSlider() {
-            if (!needsSlider) {
-                track.style.justifyContent = 'center';
-                prevBtn.style.visibility = 'hidden';
-                nextBtn.style.visibility = 'hidden';
-                dotsContainer.style.display = 'none';
-                return;
-            }
-            
-            // 끝에 처음 카드들 복제
-            for (let i = 0; i < cloneCount; i++) {
-                const clone = originalCards[i % totalCards].cloneNode(true);
-                clone.classList.add('clone');
-                track.appendChild(clone);
-            }
-            
-            // 처음에 마지막 카드들 복제 (올바른 순서로)
-            for (let i = cloneCount - 1; i >= 0; i--) {
-                const srcIndex = (totalCards - cloneCount + i) % totalCards;
-                const clone = originalCards[srcIndex].cloneNode(true);
-                clone.classList.add('clone');
-                track.insertBefore(clone, track.firstChild);
-            }
-            
-            // 카드 너비 계산 및 초기 위치 설정
-            updateCardWidth();
-            setPositionWithoutTransition(0);
-        }
-        
-        function updateCardWidth() {
-            const firstCard = track.querySelector('.game-card');
-            if (firstCard) {
-                // CSS에서 실제 gap 값 가져오기
-                const trackStyle = window.getComputedStyle(track);
-                const gap = parseFloat(trackStyle.gap) || 12;
-                cardWidth = firstCard.offsetWidth + gap;
-            }
-        }
-        
-        function setPositionWithoutTransition(index) {
-            track.style.transition = 'none';
-            const offset = (index + cloneCount) * cardWidth;
-            track.style.transform = `translateX(-${offset}px)`;
-        }
         
         // 도트 생성
         function createDots() {
-            if (!needsSlider) return;
             dotsContainer.innerHTML = '';
             for (let i = 0; i < totalCards; i++) {
                 const dot = document.createElement('span');
@@ -192,67 +140,83 @@
             }
         }
         
+        // 카드 너비와 gap 계산
+        function getCardWidth() {
+            const firstCard = track.querySelector('.game-card');
+            if (!firstCard) return 300;
+            const trackStyle = window.getComputedStyle(track);
+            const gap = parseFloat(trackStyle.gap) || 24;
+            return firstCard.offsetWidth + gap;
+        }
+        
+        // 슬라이드 위치 업데이트
+        function updateSliderPosition(animate = true) {
+            const cardWidth = getCardWidth();
+            if (animate) {
+                track.style.transition = 'transform 0.4s ease-in-out';
+            } else {
+                track.style.transition = 'none';
+            }
+            track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        }
+        
         // 슬라이드 이동
         function slide(direction) {
-            if (!needsSlider || isTransitioning) return;
+            if (isTransitioning) return;
             isTransitioning = true;
             
             currentIndex += direction;
             
-            track.style.transition = 'transform 0.4s ease-in-out';
-            const offset = (currentIndex + cloneCount) * cardWidth;
-            track.style.transform = `translateX(-${offset}px)`;
+            // 경계 처리
+            if (currentIndex < 0) {
+                currentIndex = totalCards - 1;
+            } else if (currentIndex >= totalCards) {
+                currentIndex = 0;
+            }
+            
+            updateSliderPosition(true);
+            updateDots();
+            
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 400);
         }
         
         // 특정 슬라이드로 이동
         function goToSlide(index) {
-            if (isTransitioning) return;
+            if (isTransitioning || index === currentIndex) return;
             isTransitioning = true;
             
             currentIndex = index;
-            
-            track.style.transition = 'transform 0.4s ease-in-out';
-            const offset = (currentIndex + cloneCount) * cardWidth;
-            track.style.transform = `translateX(-${offset}px)`;
-        }
-        
-        // 트랜지션 종료 시 무한 루프 처리
-        track.addEventListener('transitionend', () => {
-            isTransitioning = false;
-            
-            // 끝에 도달하면 처음으로 점프
-            if (currentIndex >= totalCards) {
-                currentIndex = 0;
-                setPositionWithoutTransition(0);
-            }
-            // 처음 이전으로 가면 끝으로 점프
-            else if (currentIndex < 0) {
-                currentIndex = totalCards - 1;
-                setPositionWithoutTransition(totalCards - 1);
-            }
-            
+            updateSliderPosition(true);
             updateDots();
-        });
+            
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 400);
+        }
         
         // 도트 업데이트
         function updateDots() {
             const dots = document.querySelectorAll('.dot');
-            const realIndex = ((currentIndex % totalCards) + totalCards) % totalCards;
             dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === realIndex);
+                dot.classList.toggle('active', i === currentIndex);
             });
         }
         
         // 초기화
         if (totalCards > 0) {
-            setupInfiniteSlider();
             createDots();
-            updateDots();
+            updateSliderPosition(false);
         }
         
         // 리사이즈 대응
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            location.reload();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                updateSliderPosition(false);
+            }, 100);
         });
     </script>
 </body>
