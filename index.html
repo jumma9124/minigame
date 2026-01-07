@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>미니 게임 아케이드</title>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
@@ -167,7 +167,10 @@
         function updateCardWidth() {
             const firstCard = track.querySelector('.game-card');
             if (firstCard) {
-                cardWidth = firstCard.offsetWidth + 24; // gap 포함
+                // CSS에서 실제 gap 값 가져오기
+                const trackStyle = window.getComputedStyle(track);
+                const gap = parseFloat(trackStyle.gap) || 12;
+                cardWidth = firstCard.offsetWidth + gap;
             }
         }
         
